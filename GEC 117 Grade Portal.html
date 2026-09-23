@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GEC 117 Grade Portal</title>
+<style>
+  :root{
+    --navy:#16213E; --navy-deep:#0D1526; --gold:#C9A227; --gold-soft:#E8D9A0;
+    --paper:#F6F4EE; --ink:#1A1A1A; --ink-soft:#5B5B54; --line:#D9D4C4;
+    --fail:#8A2B2B; --pass:#1F5C3F;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  *{box-sizing:inherit;}
+  body{
+    margin:0; min-height:100%; background:var(--paper); color:var(--ink);
+    font-family:'Iowan Old Style','Palatino Linotype',Georgia,'Times New Roman',serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --paper:#12151C; --ink:#EDEAE0; --ink-soft:#A9A597; --line:#2B2F3A; }
+  }
+  :root[data-theme="dark"]{ --paper:#12151C; --ink:#EDEAE0; --ink-soft:#A9A597; --line:#2B2F3A; }
+
+  .seal-bar{ background:var(--navy-deep); color:var(--gold-soft); text-align:center; padding:.5rem 1rem; font-family:Georgia,serif; font-size:.78rem; letter-spacing:.03em; }
+  header{ max-width:760px; margin:0 auto; padding:2.6rem 1.5rem 1.4rem; text-align:center; }
+  header .school{ font-family:Georgia,serif; font-size:.95rem; color:var(--ink-soft); }
+  header h1{ font-size:2.1rem; line-height:1.15; margin:.5rem 0 .3rem; font-weight:600; }
+  header p.sub{ color:var(--ink-soft); font-size:1rem; margin:0; }
+
+  main{ max-width:560px; margin:0 auto; padding:0 1.5rem 3rem; }
+
+  .card{
+    background:transparent; border:1px solid var(--line); border-radius:2px;
+    padding:2rem 1.8rem; position:relative;
+  }
+  .card::before{
+    content:""; position:absolute; inset:6px; border:1px solid var(--line); pointer-events:none; opacity:.6;
+  }
+  label{ display:block; font-size:.82rem; color:var(--ink-soft); margin:0 0 .35rem; font-family:Georgia,serif;}
+  input{
+    width:100%; padding:.7rem .8rem; margin-bottom:1.2rem; font-size:1rem;
+    border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    border-radius:2px; font-family:inherit;
+  }
+  input:focus{ outline:2px solid var(--gold); outline-offset:1px; border-color:var(--gold); }
+
+  button.check{
+    width:100%; padding:.85rem; font-size:1rem; background:var(--navy); color:var(--gold-soft);
+    border:none; border-radius:2px; cursor:pointer; font-family:Georgia,serif; letter-spacing:.02em;
+  }
+  button.check:hover{ background:var(--navy-deep); }
+  button.check:active{ transform:translateY(1px); }
+
+  .error{ color:var(--fail); font-size:.9rem; margin-top:1rem; text-align:center; min-height:1.2em; }
+
+  .note{ color:var(--ink-soft); font-size:.82rem; text-align:center; margin-top:1.6rem; line-height:1.5; }
+
+  /* modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(13,21,38,.55); display:none;
+    align-items:center; justify-content:center; padding:1.2rem; z-index:10;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    background:var(--paper); max-width:420px; width:100%; border-radius:3px;
+    border:1px solid var(--line); padding:1.8rem 1.7rem 1.6rem; position:relative;
+    box-shadow:0 20px 50px rgba(0,0,0,.3);
+  }
+  .modal .close{
+    position:absolute; top:.7rem; right:.9rem; background:none; border:none; font-size:1.3rem;
+    color:var(--ink-soft); cursor:pointer; line-height:1;
+  }
+  .modal h2{ margin:0 0 .1rem; font-size:1.25rem; }
+  .modal .sid{ color:var(--ink-soft); font-size:.85rem; margin-bottom:1.3rem; }
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:.7rem; margin-bottom:1.1rem; }
+  .gbox{ border:1px solid var(--line); border-radius:2px; padding:.7rem .4rem; text-align:center; }
+  .gbox .k{ font-size:.72rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; }
+  .gbox .v{ font-size:1.3rem; margin-top:.25rem; font-weight:600; }
+  .semfinal{ border-top:1px solid var(--line); padding-top:1rem; text-align:center; }
+  .semfinal .k{ font-size:.78rem; color:var(--ink-soft); }
+  .semfinal .v{ font-size:1.8rem; font-weight:700; margin-top:.2rem; }
+  .v.fail{ color:var(--fail); } .v.pass{ color:var(--pass); }
+  .scale{ font-size:.75rem; color:var(--ink-soft); text-align:center; margin-top:1rem; }
+</style>
+</head>
+<body>
+
+<div class="seal-bar">ACADEMIA DE TECNOLOGIA IN MINDANAO, INC. &nbsp;·&nbsp; COTABATO CITY</div>
+
+<header>
+  <div class="school">1st Semester, A.Y. 2026&ndash;2027</div>
+  <h1>GEC 117 &nbsp;Grade Portal</h1>
+  <p class="sub">Readings in Philippine History &nbsp;&middot;&nbsp; TTH 8:30&ndash;10:00 &nbsp;&middot;&nbsp; 3rd Court</p>
+</header>
+
+<main>
+  <div class="card">
+    <form id="lookupForm">
+      <label for="sid">Student ID No.</label>
+      <input id="sid" type="text" placeholder="e.g. A261062" autocomplete="off" required>
+      <label for="sname">Full Name</label>
+      <input id="sname" type="text" placeholder="Surname, Given Name" autocomplete="off" required>
+      <button class="check" type="submit">Check my grades</button>
+      <div class="error" id="err"></div>
+    </form>
+    <div class="note">Enter your Student ID exactly as issued, and any part of your registered name, to view your Prelim, Midterm and Final grades.</div>
+  </div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="close" id="closeModal" aria-label="Close">&times;</button>
+    <h2 id="mName">&nbsp;</h2>
+    <div class="sid" id="mMeta">&nbsp;</div>
+    <div class="grid3">
+      <div class="gbox"><div class="k">Prelim</div><div class="v" id="mPrelim">&mdash;</div></div>
+      <div class="gbox"><div class="k">Midterm</div><div class="v" id="mMidterm">&mdash;</div></div>
+      <div class="gbox"><div class="k">Final</div><div class="v" id="mFinal">&mdash;</div></div>
+    </div>
+    <div class="semfinal">
+      <div class="k" id="mSemLabel">Semestral Grade</div>
+      <div class="v" id="mSem">&mdash;</div>
+    </div>
+    <div class="scale">Scale: 1.0 (highest) &ndash; 3.0 (lowest passing) &ndash; 5.0 (failed)</div>
+  </div>
+</div>
+
+<script>
+const STUDENTS = [{"id": "A260994", "name": "ABAS, MOHAMEDIN KASAN", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261062", "name": "ABDULGANI, AL-RASHLEYDIN KAMBAL", "program": "BSCE-1st Year", "prelim": "1.6", "midterm": null, "final": null, "sem": "0.5"}, {"id": "A261048", "name": "ABDULKARIM, AL_FAZIE RAIMAN IBAD", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261041", "name": "ABDULLAH, NORSAID SOLAIMAN", "program": "BSCE-1st Year", "prelim": "2.1", "midterm": null, "final": null, "sem": "0.6"}, {"id": "A261087", "name": "ABDULLAH, SODIS SANDIALEN", "program": "BSCE-1st Year", "prelim": "1.7", "midterm": null, "final": null, "sem": "0.5"}, {"id": "A260921", "name": "ABDULPATAH, NORJIHAD ACO", "program": "BSCE-1st Year", "prelim": "1.3", "midterm": null, "final": null, "sem": "0.4"}, {"id": "A261038", "name": "ABDULRAHMAN, SAF-IN BANDALI", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261026", "name": "ABI, BOCARI DIMANDA", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A260936", "name": "ABPET, ALI HASHEM BUISAN", "program": "BSCE-1st Year", "prelim": "1.4", "midterm": null, "final": null, "sem": "0.4"}, {"id": "A261201", "name": "AGUAM, HANIFAH ARELLANO", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261055", "name": "ALI, MUS-AB BOTONGKAY", "program": "BSCE-1st Year", "prelim": "1.8", "midterm": null, "final": null, "sem": "0.5"}, {"id": "A261035", "name": "ALI, SALAHUDIN SALO", "program": "BSCE-1st Year", "prelim": "1.7", "midterm": null, "final": null, "sem": "0.5"}, {"id": "A261095", "name": "AMAN, ARTHEA MAE MLOK", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261152", "name": "AMERIL, ASNIAH KASAN", "program": "BSCRIM-1st Year", "prelim": "2.8", "midterm": null, "final": null, "sem": "0.8"}, {"id": "A260933", "name": "AMPUAN, SHARIFF USOP", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261001", "name": "ANGGOL, BAI ZORAYLLA MAE USMAN", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261085", "name": "ANGKAL, SAMSUDIN BANDAO", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261044", "name": "ARUMPAC, AMILODEN JR. TABANAY", "program": "BSCE-1st Year", "prelim": "1.9", "midterm": null, "final": null, "sem": "0.6"}, {"id": "A261084", "name": "BAJUNAID, JARIL KUSAIN", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A261088", "name": "BARBO, AISHA FATMA SARIP", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261074", "name": "BUISAN, AL-RAEIZ BINANGON", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A260973", "name": "BUISAN, ALNUR DIOCOLANO", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A261120", "name": "BULILO, PHALOS SUNDANYA", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A261002", "name": "CABILO, AMERODIN KALALAGAN", "program": "BSCE-1st Year", "prelim": "1.3", "midterm": null, "final": null, "sem": "0.4"}, {"id": "A261097", "name": "CALIM, BAI HAJERAH SIA", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A260968", "name": "CANA, AL-JAMEL DIRAGEN", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A261231", "name": "CEBALLO, JESSIE ZOILO CASA", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A260967", "name": "CELAB, RALPH IMERSON ARBOLEDA", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261047", "name": "CINCHES, JANRYL MAMADA", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261031", "name": "DADIGAN, DATU WAEL SALEM", "program": "BSCE-1st Year", "prelim": "2.6", "midterm": null, "final": null, "sem": "0.8"}, {"id": "A261139", "name": "DIMASANGKAY, ABDUL JAMIEL ENOK", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A261211", "name": "EBAD, ZULKIFLY ANDONGAN", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A260986", "name": "GANDAWALI, AIMAN DANDOY", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A260854", "name": "KARON, MOHAMMAD ALFATTAH BUENBRAZO", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A261192", "name": "LAKIM, NORHAN SAMAMA", "program": "BSCE-1st Year", "prelim": "1.8", "midterm": null, "final": null, "sem": "0.5"}, {"id": "A261185", "name": "MACASINDIL, ARIFFIN NAIF MASTURA", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A260984", "name": "MANTAWIL, DANESH ARSHAD KANAPIA", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A261228", "name": "MONIB, MUHAMMAD-NUR BANTO", "program": "BSCE-1st Year", "prelim": "5.0", "midterm": null, "final": null, "sem": "1.5"}, {"id": "A261182", "name": "MUSTAPHA, AL-RAFFY KLAEWKLA", "program": "BSCE-1st Year", "prelim": "1.4", "midterm": null, "final": null, "sem": "0.4"}, {"id": "A261217", "name": "NAGUIB, MOHAMAD SAMIR BILAO", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A250694", "name": "OCAMPO, SAMRHOUD ILON", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}, {"id": "A261051", "name": "RAJAHPANDALAT, HEBA KUNTA", "program": "BSCE-1st Year", "prelim": "1.2", "midterm": null, "final": null, "sem": "0.4"}, {"id": "A261179", "name": "SANTIAGO, MARY ANN DALIMBANG", "program": "BSSW-1st Year", "prelim": "2.1", "midterm": null, "final": null, "sem": "0.6"}, {"id": "A261221", "name": "SARIUL, SALMAN MARALLAHI", "program": "BSCE-1st Year", "prelim": "1.7", "midterm": null, "final": null, "sem": "0.5"}, {"id": "A261183", "name": "UDAK, ZAIRE KHALIL AMBOLODTO", "program": "BSCE-1st Year", "prelim": "1.6", "midterm": null, "final": null, "sem": "0.5"}, {"id": "A261208", "name": "UDTOG, MUSH-AB TAJA", "program": "BSCE-1st Year", "prelim": "1.0", "midterm": null, "final": null, "sem": "0.3"}]
+;
+
+const form = document.getElementById('lookupForm');
+const err = document.getElementById('err');
+const overlay = document.getElementById('overlay');
+
+function norm(s){ return (s||'').trim().toUpperCase().replace(/\s+/g,' '); }
+function dash(v){ return (v===null || v===undefined || v==='') ? '&mdash;' : v; }
+
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  err.textContent = '';
+  const id = norm(document.getElementById('sid').value);
+  const name = norm(document.getElementById('sname').value);
+  if(!id || !name){ err.textContent = 'Please fill in both fields.'; return; }
+
+  const student = STUDENTS.find(s => norm(s.id) === id);
+  if(!student){ err.textContent = 'No record found for that Student ID.'; return; }
+  if(!norm(student.name).includes(name)){
+    err.textContent = 'Name does not match our record for that ID.';
+    return;
+  }
+  openModal(student);
+});
+
+function openModal(s){
+  document.getElementById('mName').textContent = s.name;
+  document.getElementById('mMeta').textContent = s.id + '  ·  ' + s.program;
+  document.getElementById('mPrelim').innerHTML = dash(s.prelim);
+  document.getElementById('mMidterm').innerHTML = dash(s.midterm);
+  document.getElementById('mFinal').innerHTML = dash(s.final);
+  const semEl = document.getElementById('mSem');
+  semEl.innerHTML = dash(s.sem);
+  semEl.className = 'v';
+  const complete = s.prelim && s.midterm && s.final;
+  document.getElementById('mSemLabel').textContent = complete ? 'Semestral Grade' : 'Grade so far (Prelim only)';
+  overlay.classList.add('show');
+}
+document.getElementById('closeModal').addEventListener('click', ()=> overlay.classList.remove('show'));
+overlay.addEventListener('click', (e)=>{ if(e.target === overlay) overlay.classList.remove('show'); });
+</script>
+</body>
+</html>
